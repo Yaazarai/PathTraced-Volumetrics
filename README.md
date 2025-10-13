@@ -20,7 +20,7 @@ uniform float rayCount;
 vec4 trace(vec2 rxy, vec2 dxy, vec2 adxy) {
 	const float stepSize = 1.0;
 	vec3 radiance = vec3(0.0), transmit = vec3(1.0);
-	vec2 delta = dxy / mix(adxy.x, adxy.y, step(adxy.x, adxy.y));
+	vec2 delta = dxy / max(adxy.x, adxy.y);
 	for(float ii = 0.0; ii < max(worldExt.x, worldExt.y); ii += stepSize) {
 		vec2 ray = (rxy + (delta * ii)) / worldExt;
 		if (floor(ray) != vec2(0.0)) break;
