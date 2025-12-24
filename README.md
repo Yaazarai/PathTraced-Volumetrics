@@ -17,17 +17,21 @@ uniform float rayCount;
 #define SRGB(c) vec4(pow(c.rgb, vec3(1.0 / 2.2)), 1.0)
 #define RADIANS(n) ((n) * 6.283185)
 
-vec4 trace(vec2 rxy, vec2 dxy, vec2 adxy) {
-	const float stepSize = 1.0;
+vec4 trace(vec2 rxy, vec2 dxy) {
 	vec3 radiance = vec3(0.0), transmit = vec3(1.0);
-	vec2 delta = dxy / max(adxy.x, adxy.y);
-	for(float ii = 0.0; ii < max(worldExt.x, worldExt.y); ii += stepSize) {
-		vec2 ray = (rxy + (delta * ii)) / worldExt;
+	const float stepSize = 1.0;
+	vec2 delta = dxy / max(abs(dxy.x), abs(dxy.y));
+	vec2 invWorldExt = 1.0 / worldExt;
+	for(float ii = 0.0; ii < worldExt.x; ii += stepSize) {
+		vec2 ray = (rxy + (delta * ii)) * invWorldExt;
 		if (floor(ray) != vec2(0.0)) break;
-        vec3 emiss = texture2D(emissivity, ray).rgb;
-		vec3 absrp = texture2D(absorption, ray).rgb;
-        radiance += transmit * emiss * stepSize;
-		transmit *= exp(-absrp * stepSize);
+		vec3 emiss = LINEAR(texture2D(emissivity, ray)).rgb;
+		vec3 absrp = LINEAR(texture2D(absorption, ray)).rgb;
+		vec3 trans = exp(-absrp);
+		vec3 radnc = (1.0 - trans) * emiss;
+		
+		radiance += radnc * transmit;
+		transmit *= trans;
 	}
 	return vec4(radiance, 1.0);
 }
@@ -49,4 +53,4 @@ The raymarch function allws adjusting the stepSize either for performance (assum
 
 Absorption is the particle mean-free path (average distance a particle travels through a medium before being absorbed). This defines the average loss of energy per-each raymarch step through aa medium.
 
-Emissivity is the unit energy given off by an object through thermal radiation, in this case in the visible spectrum. This defines the average cgain of energy per-each raymarch step through a medium.
+Emissivity is the unit energy given off by an object through thermal radiation, in this case in the visible spectrum. This defines the average gain of energy per-each raymarch step through a medium.
