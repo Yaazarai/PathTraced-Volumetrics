@@ -1,15 +1,24 @@
+var w = occluder_size;
+
 surface_set_target(render_emissivity.memory);
 draw_clear_alpha(c_black, 0);
-	draw_sprite_ext(Spr_SampleSceneA, 0, 0, 0, 0.5, 0.5, 0, c_white, 1.0);
-	draw_set_color(c_black);
+	//draw_sprite_ext(Spr_SampleSceneA, 0, 0, 0, 0.5, 0.5, 0, c_white, 1.0);
+	draw_set_color($FFFFFF);
+	draw_circle(floor(mouse_x/2), floor(mouse_y/2), occluder_size, false);
+	//draw_rectangle(floor(63)-w,floor(63)-w,floor(63)+w,floor(63)+w, false);
+	//draw_point(floor(mouse_x/8), floor(mouse_y/8));
 surface_reset_target();
 
 surface_set_target(render_absorption.memory);
 draw_clear_alpha(c_black, 0);
 gpu_set_blendmode(bm_add);
-	draw_sprite_ext(Spr_SampleSceneB, 0, 0, 0, 0.5, 0.5, 0, c_white, 1.0);
-	draw_set_color($030906);
+	//draw_sprite_ext(Spr_SampleSceneB, 0, 0, 0, 0.5, 0.5, 0, c_white, 1.0);
+	draw_set_color($FFFFFF);
 	draw_circle(floor(mouse_x/2), floor(mouse_y/2), occluder_size, false);
+	//draw_rectangle(floor(63)-w,floor(63)-w,floor(63)+w,floor(63)+w, false);
+	//draw_point(floor(mouse_x/8), floor(mouse_y/8));
+	//draw_set_color($101010);
+	//draw_circle(127, 127, 64, false);
 gpu_set_blendmode(bm_normal);
 surface_reset_target();
 

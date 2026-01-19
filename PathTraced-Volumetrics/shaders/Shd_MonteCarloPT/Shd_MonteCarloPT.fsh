@@ -9,27 +9,31 @@ uniform float rayCount;
 #define SRGB(c) vec4(pow(c.rgb, vec3(1.0 / 2.2)), 1.0)
 #define RADIANS(n) ((n) * 6.283185)
 
-vec4 trace(vec2 rxy, vec2 dxy, vec2 adxy) {
-	const float stepSize = 2.0;
-	vec3 radiance = vec3(0.0), transmit = vec3(1.0);
-	vec2 delta = dxy / mix(adxy.x, adxy.y, step(adxy.x, adxy.y));
-	for(float ii = 0.0; ii < max(worldExt.x, worldExt.y); ii += stepSize) {
-		vec2 ray = (rxy + (delta * ii)) / worldExt;
+void trace(vec2 x1y1, vec2 x2y2, out vec3 radiance, out vec3 transmit) {
+	const float stride = 1.0;
+	vec2  segment = x2y2 - x1y1;
+	float intrv = max(abs(segment.x), abs(segment.y));
+	vec2 delta = segment / vec2(intrv);
+	
+	radiance = vec3(0.0);
+	transmit = vec3(1.0);
+	
+	for(float ii = 0.0; ii < intrv; ii += stride) {
+		vec2 ray = (x1y1 + (delta * ii)) / worldExt;
+		
 		if (floor(ray) != vec2(0.0)) break;
-		vec3 emiss = texture2D(emissivity, ray).rgb;
-		vec3 absrp = texture2D(absorption, ray).rgb;
-		radiance += transmit * emiss * stepSize;
-		transmit *= exp(-absrp * stepSize);
+		radiance += transmit * SRGB(texture2D(emissivity, ray)).rgb * stride;
+		transmit *= exp(-SRGB(texture2D(absorption, ray)).rgb * stride);
 	}
-	return vec4(radiance, 1.0);
 }
 
 void main() {
+	float bluenoise = texture2D(noise, in_TexelCoord).r;
 	for(float i = 0.0; i < rayCount; i += 1.0) {
-	    float bluenoise = texture2D(noise, in_TexelCoord).r;
 		float theta = RADIANS((i + bluenoise) / rayCount);
 		vec2 delta = vec2(cos(theta), -sin(theta)) * length(worldExt);
 		vec2 origin = in_TexelCoord * worldExt;
+<<<<<<< Updated upstream
 		gl_FragColor += LINEAR(trace(origin, delta, abs(delta)));
 	}
 	gl_FragColor = SRGB(vec4(gl_FragColor / rayCount));
@@ -42,3 +46,13 @@ void main() {
 	Absorption:
 		Subtractive Color Blending
 */
+=======
+		vec3 radiance = vec3(0.0), transmit = vec3(1.0);
+		delta = origin + delta;
+		trace(origin, delta, radiance, transmit);
+		gl_FragColor += LINEAR(vec4(radiance, 1.0));
+	}
+	
+	gl_FragColor = SRGB(vec4(gl_FragColor / rayCount));
+}
+>>>>>>> Stashed changes

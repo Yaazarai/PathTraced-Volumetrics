@@ -4,10 +4,10 @@
 		render_rays : number of rays to cast per rendered pixel
 */
 surface_depth_disable(true);
-game_set_speed(144, gamespeed_fps);
+game_set_speed(144 * 8, gamespeed_fps);
 
 occluder_size = 16;
-render_size = 512;
+render_size = 256;
 render_rays = 128;
 
 render_surflist = ds_list_create();
