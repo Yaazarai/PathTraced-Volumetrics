@@ -57,8 +57,6 @@ NOTE: With this raytracing function (line tracing) the path tracer has an angula
 
 The path-tracer doesn't do actual monte-carlo temporal filtering--because whatever--it just casts uniformly-spaced noisely offset rays and converts the final output from SRGB -> LINEAR -> SRGB. The rendered output is done in SRGB, whereas for rendering we want to operate in linear color space (as the rendering equation is linear), so a conversion to linear and back is required.
 
-The raymarch function allws adjusting the stepSize either for performance (assuming some minimum size object), but consequently produces skipping artifacts.
-
 Absorption is the particle mean-free path (average distance a particle travels through a medium before being absorbed). This defines the average loss of energy per-each raymarch step through aa medium.
 
 Emissivity is the unit energy given off by an object through thermal radiation, in this case in the visible spectrum. This defines the average gain of energy per-each raymarch step through a medium.
